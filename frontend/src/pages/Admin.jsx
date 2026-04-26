@@ -362,6 +362,8 @@ export default function Admin() {
           <img
             src={p.image_url}
             alt={p.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-48 object-cover"
           />
         )}
@@ -495,6 +497,8 @@ export default function Admin() {
                   src={c.image_url}
                   alt={c.title}
                   className="w-full h-48 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
 

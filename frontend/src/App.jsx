@@ -97,7 +97,7 @@ function App() {
             {/* Kiri */}
             <div className="animate__animated animate__fadeInUp animate__delay-3s">
               <div className="flex items-center gap-3 mb-6 bg-zinc-800 w-fit p-4 rounded-2xl">
-                <img src="./assets/ref.png" className="w-10 rounded-md" />
+                <img src="./assets/ref.png" className="w-10 rounded-md" loading="lazy" decoding="async" />
                 <q>Fatigue is temporary, effort lasts longer.</q>
               </div>
 
@@ -201,6 +201,8 @@ function App() {
                 <img
                   src={tool.gambar}
                   alt={tool.nama}
+                  loading="lazy"
+                  decoding="async"
                   className="w-12 h-12 object-contain group-hover:scale-110 transition"
                 />
 
@@ -294,6 +296,8 @@ function App() {
                   <img
                     src={cert.image_url}
                     alt={cert.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-48 object-cover"
                   />
                 )}

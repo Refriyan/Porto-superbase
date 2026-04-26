@@ -29,6 +29,8 @@ export default function Projects() {
             <img
               src={`https://ptlrakqipiteinujfrhg.supabase.co/storage/v1/object/public/projects/${project.image_url}`}
               className="w-full h-48 object-cover"
+              loading="lazy"
+              decoding="async"
             />
 
             <div className="p-4">
@@ -58,6 +60,8 @@ export default function Projects() {
             <img
               src={`https://ptlrakqipiteinujfrhg.supabase.co/storage/v1/object/public/projects/${selectedProject.image_url}`}
               className="w-full h-52 object-cover rounded mb-4"
+              loading="lazy"
+              decoding="async"
             />
 
             <h2 className="text-2xl font-bold mb-2">{selectedProject.title}</h2>

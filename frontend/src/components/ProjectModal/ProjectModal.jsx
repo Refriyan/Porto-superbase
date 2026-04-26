@@ -48,6 +48,8 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
           <img
             src={project.image}
             alt={project?.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-56 object-cover rounded-t-2xl"
           />
         )}
