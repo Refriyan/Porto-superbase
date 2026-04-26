@@ -32,6 +32,8 @@ const ScrollReveal = ({
     });
   }, [children]);
 
+  const isMobile = window.innerWidth < 768;
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -76,7 +78,7 @@ const ScrollReveal = ({
       }
     );
 
-    if (enableBlur) {
+    if (enableBlur && !isMobile) {
       gsap.fromTo(
         wordElements,
         { filter: `blur(${blurStrength}px)` },
@@ -96,7 +98,11 @@ const ScrollReveal = ({
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.trigger === el) {
+          trigger.kill();
+        }
+      });
     };
   }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
 

@@ -78,7 +78,7 @@ function App() {
   return (
     <>
       {/* Background Aurora */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
+      <div className="fixed top-0 left-0 w-full h-full -z-10">
         <Aurora
           colorStops={["#577870", "#1F97A6", "#127B99"]}
           blend={0.5}
@@ -91,7 +91,7 @@ function App() {
         {/* ================= HOME ================= */}
         <section
           id="home"
-          className="relative min-h-screen flex items-center pb-32"
+          className="relative  min-h-[100dvh] flex items-center pb-32"
         >
           <div className="hero grid md:grid-cols-2 items-center pt-10 gap-6 w-full overflow-hidden">
             {/* Kiri */}
