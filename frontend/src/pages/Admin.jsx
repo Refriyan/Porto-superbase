@@ -14,12 +14,13 @@ import {
 } from "../services/certif";
 import { login } from "../services/auth";
 import { uploadImage } from "../services/storage";
-import { supabase } from "../services/api"
+import { supabase } from "../services/api";
 
 export default function Admin() {
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
+  const TIMEOUT_DURATION = 6 * 60 * 60 * 1000; // 6 jam dalam milidetik
   // PROJECT STATE
   const [projects, setProjects] = useState([]);
   const [title, setTitle] = useState("");
@@ -69,6 +70,39 @@ export default function Admin() {
     await supabase.auth.signOut();
     navigate("/login");
   };
+  // Catat waktu aktivitas terakhir
+  const updateActivity = () => {
+    localStorage.setItem("lastActivity", Date.now());
+  };
+
+  // Cek apakah sudah timeout
+  const isTimedOut = () => {
+    const last = localStorage.getItem("lastActivity");
+    if (!last) return true;
+    return Date.now() - Number(last) > TIMEOUT_DURATION;
+  };
+
+  useEffect(() => {
+    // Catat aktivitas awal
+    updateActivity();
+
+    // Track aktivitas user (mouse, keyboard, scroll)
+    const events = ["mousemove", "keydown", "click", "scroll"];
+    events.forEach((e) => window.addEventListener(e, updateActivity));
+
+    // Cek timeout setiap 1 menit
+    const interval = setInterval(() => {
+      if (isTimedOut()) {
+        supabase.auth.signOut();
+        navigate("/login");
+      }
+    }, 60 * 1000); // cek tiap 1 menit
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, updateActivity));
+      clearInterval(interval);
+    };
+  }, []);
 
   // ================= PROJECT =================
   const handleSubmit = async (e) => {
@@ -244,7 +278,12 @@ export default function Admin() {
   };
 
   // ================= LOGIN VIEW =================
-  if (!ready) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!ready)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
 
   // ================= MAIN =================
   return (

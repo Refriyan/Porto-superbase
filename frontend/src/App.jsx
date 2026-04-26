@@ -11,12 +11,13 @@ import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
 import ProjectModal from "./components/ProjectModal/ProjectModal"; // <-- IMPORT MODAL
 import Aurora from "./components/Aurora/Aurora";
 import AOS from "aos";
-//import ChatRoom from "./components/ChatRoom";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import { getProjects } from "./services/project";
 import { getCertif } from "./services/certif";
 import ChatRoom from "./components/ChatRoom";
 import { FaEnvelope, FaInstagram } from "react-icons/fa";
+import SkillsGrid from "./components/SkillsGrid/SkillsGrid";
+import CertifFolder from "./components/CertifFolder/CertifFolder";
 
 // ..
 AOS.init();
@@ -97,7 +98,12 @@ function App() {
             {/* Kiri */}
             <div className="animate__animated animate__fadeInUp animate__delay-3s">
               <div className="flex items-center gap-3 mb-6 bg-zinc-800 w-fit p-4 rounded-2xl">
-                <img src="./assets/ref.png" className="w-10 rounded-md" loading="lazy" decoding="async" />
+                <img
+                  src="./assets/ref.png"
+                  className="w-10 rounded-md"
+                  loading="lazy"
+                  decoding="async"
+                />
                 <q>Fatigue is temporary, effort lasts longer.</q>
               </div>
 
@@ -191,27 +197,7 @@ function App() {
         {/* ================= SKILLS ================= */}
         <section className="mt-20" data-aos="fade-up">
           <h2 className="text-3xl font-bold text-center mb-10">My Skills</h2>
-
-          <div className="flex flex-wrap justify-center gap-6">
-            {listTools.map((tool) => (
-              <div
-                key={tool.id}
-                className="group bg-zinc-900 p-4 rounded-xl border border-zinc-700 hover:border-red-500 transition-all duration-300"
-              >
-                <img
-                  src={tool.gambar}
-                  alt={tool.nama}
-                    loading="lazy"
-                    decoding="async"
-                  className="w-12 h-12 object-contain group-hover:scale-110 transition"
-                />
-
-                <p className="text-sm text-center mt-2 opacity-70">
-                  {tool.nama}
-                </p>
-              </div>
-            ))}
-          </div>
+          <SkillsGrid />
         </section>
 
         {/* Proyek */}
@@ -283,52 +269,7 @@ function App() {
           <p className="text-base/loose text-center opacity-50 mb-14">
             My certifications and achievements
           </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {certificates.map((cert) => (
-              <div
-                key={cert.id}
-                className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg hover:scale-[1.02] hover:shadow-purple-500/20 transition-all duration-300"
-                data-aos="fade-up"
-              >
-                {/* IMAGE */}
-                {cert.image_url && (
-                  <img
-                    src={cert.image_url}
-                    alt={cert.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-
-                {/* CONTENT */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">{cert.title}</h3>
-
-                  <p className="text-sm text-purple-400">
-                    {cert.issuer} • {cert.year}
-                  </p>
-
-                  {/* ACTION */}
-                  {cert.credential_url ? (
-                    <a
-                      href={cert.credential_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center justify-center gap-2 text-sm font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 text-white px-4 py-2 rounded-lg transition"
-                    >
-                      View Credential ↗
-                    </a>
-                  ) : (
-                    <span className="mt-4 text-xs text-gray-500 italic">
-                      No credential link
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <CertifFolder certificates={certificates} />
         </div>
 
         {/* Kontak */}
