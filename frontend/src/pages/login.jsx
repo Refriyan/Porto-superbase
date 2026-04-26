@@ -1,15 +1,17 @@
 import { useState } from "react"
 import { login } from "../services/auth"
+import { useNavigate } from "react-router-dom" // ✅ import useNavigate
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate() // ✅ tambah ini
 
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
       await login(email, password)
-      window.location.href = "/admin"
+      navigate("/admin") // ✅ ganti window.location.href — tidak full reload!
     } catch (err) {
       alert(err.message)
     }

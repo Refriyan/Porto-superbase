@@ -201,8 +201,8 @@ function App() {
                 <img
                   src={tool.gambar}
                   alt={tool.nama}
-                  loading="lazy"
-                  decoding="async"
+                    loading="lazy"
+                    decoding="async"
                   className="w-12 h-12 object-contain group-hover:scale-110 transition"
                 />
 

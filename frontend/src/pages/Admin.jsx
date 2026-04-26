@@ -14,11 +14,10 @@ import {
 } from "../services/certif";
 import { login } from "../services/auth";
 import { uploadImage } from "../services/storage";
+import { supabase } from "../services/api"
 
 export default function Admin() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
   // PROJECT STATE
@@ -53,25 +52,21 @@ export default function Admin() {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchProjects();
-      fetchCertificates();
-    }
-  }, [token]);
+    // Cek Supabase session — tidak perlu login lagi
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/login"); // kalau tidak ada session, balik ke login
+      } else {
+        setReady(true);
+        fetchProjects();
+        fetchCertificates();
+      }
+    });
+  }, []);
 
   // ================= AUTH =================
-  const handleLogin = async () => {
-    try {
-      await login(username, password);
-      setToken("logged"); // simple flag
-    } catch (err) {
-      alert("Login gagal: " + err.message);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate("/login");
   };
 
@@ -249,29 +244,7 @@ export default function Admin() {
   };
 
   // ================= LOGIN VIEW =================
-  if (!token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="bg-zinc-900 p-10 rounded-xl w-80">
-          <h2 className="mb-4">Admin Login</h2>
-          <input
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full mb-2 p-2 bg-zinc-800"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full mb-4 p-2 bg-zinc-800"
-          />
-          <button onClick={handleLogin} className="w-full bg-red-600 p-2">
-            Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (!ready) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   // ================= MAIN =================
   return (
@@ -288,143 +261,139 @@ export default function Admin() {
       </div>
 
       {/* ================= PROJECT ================= */}
-<div className="mb-20">
-  {/* HEADER */}
-  <div className="mb-6">
-    <h2 className="text-3xl font-bold">Projects</h2>
-    <p className="text-gray-400 text-sm">
-      Kelola project portfolio Anda
-    </p>
-  </div>
+      <div className="mb-20">
+        {/* HEADER */}
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold">Projects</h2>
+          <p className="text-gray-400 text-sm">Kelola project portfolio Anda</p>
+        </div>
 
-  {/* FORM */}
-  <form
-    onSubmit={editing ? handleUpdate : handleSubmit}
-    className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-purple-500/20 p-6 rounded-2xl mb-8"
-  >
-    <div className="grid md:grid-cols-2 gap-4 mb-4">
-      <input
-        className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
-        placeholder="Project Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+        {/* FORM */}
+        <form
+          onSubmit={editing ? handleUpdate : handleSubmit}
+          className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-purple-500/20 p-6 rounded-2xl mb-8"
+        >
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <input
+              className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
+              placeholder="Project Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
-      <input
-        className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
-        placeholder="Tech Stack"
-        value={tech}
-        onChange={(e) => setTech(e.target.value)}
-      />
+            <input
+              className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
+              placeholder="Tech Stack"
+              value={tech}
+              onChange={(e) => setTech(e.target.value)}
+            />
 
-      <input
-        className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
-        placeholder="GitHub URL"
-        value={githubUrl}
-        onChange={(e) => setGithubUrl(e.target.value)}
-      />
+            <input
+              className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
+              placeholder="GitHub URL"
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+            />
 
-      <input
-        className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
-        placeholder="Live Demo URL"
-        value={liveDemo}
-        onChange={(e) => setLiveDemo(e.target.value)}
-      />
+            <input
+              className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg"
+              placeholder="Live Demo URL"
+              value={liveDemo}
+              onChange={(e) => setLiveDemo(e.target.value)}
+            />
 
-      <textarea
-        className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg md:col-span-2"
-        placeholder="Project Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-    </div>
-
-    <input
-      type="file"
-      onChange={(e) => setImage(e.target.files[0])}
-      className="w-full p-3 bg-zinc-900 border border-zinc-700 rounded-lg mb-4"
-    />
-
-    <button className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 transition">
-      {editing ? "Update Project" : "+ Add Project"}
-    </button>
-  </form>
-
-  {/* LIST */}
-  <div className="grid md:grid-cols-2 gap-6">
-    {projects.map((p) => (
-      <div
-        key={p.id}
-        className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg"
-      >
-        {/* IMAGE */}
-        {p.image_url && (
-          <img
-            src={p.image_url}
-            alt={p.title}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-48 object-cover"
-          />
-        )}
-
-        {/* CONTENT */}
-        <div className="p-4">
-          <h3 className="text-lg font-semibold">{p.title}</h3>
-
-          <p className="text-sm text-purple-400 mb-2">
-            {p.tech_stack}
-          </p>
-
-          <p className="text-sm text-gray-400 line-clamp-2">
-            {p.description}
-          </p>
-
-          {/* ACTION */}
-          <div className="flex justify-between items-center mt-4">
-            <div className="flex gap-3 text-sm">
-              {p.github_url && (
-                <a
-                  href={p.github_url}
-                  target="_blank"
-                  className="text-purple-400 hover:underline"
-                >
-                  GitHub ↗
-                </a>
-              )}
-
-              {p.live_demo && (
-                <a
-                  href={p.live_demo}
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  Live ↗
-                </a>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleEdit(p)}
-                className="bg-yellow-500 px-3 py-1 rounded text-black text-sm"
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleDelete(p.id)}
-                className="bg-red-600 px-3 py-1 rounded text-sm"
-              >
-                🗑
-              </button>
-            </div>
+            <textarea
+              className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg md:col-span-2"
+              placeholder="Project Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
+
+          <input
+            type="file"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="w-full p-3 bg-zinc-900 border border-zinc-700 rounded-lg mb-4"
+          />
+
+          <button className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 transition">
+            {editing ? "Update Project" : "+ Add Project"}
+          </button>
+        </form>
+
+        {/* LIST */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {projects.map((p) => (
+            <div
+              key={p.id}
+              className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg"
+            >
+              {/* IMAGE */}
+              {p.image_url && (
+                <img
+                  src={p.image_url}
+                  alt={p.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-48 object-cover"
+                />
+              )}
+
+              {/* CONTENT */}
+              <div className="p-4">
+                <h3 className="text-lg font-semibold">{p.title}</h3>
+
+                <p className="text-sm text-purple-400 mb-2">{p.tech_stack}</p>
+
+                <p className="text-sm text-gray-400 line-clamp-2">
+                  {p.description}
+                </p>
+
+                {/* ACTION */}
+                <div className="flex justify-between items-center mt-4">
+                  <div className="flex gap-3 text-sm">
+                    {p.github_url && (
+                      <a
+                        href={p.github_url}
+                        target="_blank"
+                        className="text-purple-400 hover:underline"
+                      >
+                        GitHub ↗
+                      </a>
+                    )}
+
+                    {p.live_demo && (
+                      <a
+                        href={p.live_demo}
+                        target="_blank"
+                        className="text-blue-400 hover:underline"
+                      >
+                        Live ↗
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(p)}
+                      className="bg-yellow-500 px-3 py-1 rounded text-black text-sm"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="bg-red-600 px-3 py-1 rounded text-sm"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
       {/* ================= CERTIFICATE ================= */}
       <div className="mb-20">
