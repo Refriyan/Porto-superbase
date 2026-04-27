@@ -57,6 +57,13 @@ export default function Admin() {
     setCertificates(data);
   };
 
+  useEffect(() => {
+    getProjects().then(setProjects);
+  }, []);
+
+  useEffect(() => {
+    getCertif().then(setCertificates);
+  }, []);
   // ================= PROJECT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -229,7 +236,6 @@ export default function Admin() {
     await deleteCertif(id);
     fetchCertificates();
   };
-
 
   // ================= MAIN =================
   return (
