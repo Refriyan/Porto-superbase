@@ -1,5 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+  "routes": [
+    { "src": "^/$", "dest": "/" },
+    { "src": "^/admin$", "dest": "/" },
+    { "src": "^/login$", "dest": "/" },
+    { "src": ".*", "status": 404 }
   ]
 }
