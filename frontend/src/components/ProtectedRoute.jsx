@@ -1,28 +1,45 @@
-import { Navigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-import { supabase } from "../services/api"
+import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../services/api";
 
 export default function ProtectedRoute({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [allowed, setAllowed] = useState(null);
+
+  const SESSION_LIMIT = 10 * 60 * 1000; // 10 menit
 
   useEffect(() => {
-    // ✅ Baca session dari local storage dulu (instant, tidak hit network)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    const check = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    // ✅ Listen kalau session berubah (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+      const loginTime = localStorage.getItem("loginTime");
 
-    return () => subscription.unsubscribe()
-  }, [])
+      // ❌ tidak login
+      if (!session || !loginTime) {
+        setAllowed(false);
+        return;
+      }
 
-  if (loading) return <p>Loading...</p>
-  if (!user) return <Navigate to="/login" />
-  return children
+      // ❌ expired
+      const expired = Date.now() - Number(loginTime) > SESSION_LIMIT;
+
+      if (expired) {
+        await supabase.auth.signOut();
+        localStorage.removeItem("loginTime");
+        setAllowed(false);
+        return;
+      }
+
+      // ✅ aman
+      setAllowed(true);
+    };
+
+    check();
+  }, []);
+
+  if (allowed === null) return <div>Loading...</div>;
+  if (!allowed) return <Navigate to="/login" replace />;
+
+  return children;
 }

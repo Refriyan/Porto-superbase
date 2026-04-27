@@ -20,13 +20,6 @@ import SkillsGrid from "./components/SkillsGrid/SkillsGrid";
 import CertifFolder from "./components/CertifFolder/CertifFolder";
 
 // ..
-AOS.init({
-  duration: 800,
-  easing: "ease-out-cubic",
-  once: true, // WAJIB (biar gak animasi ulang terus)
-  offset: 80,
-});
-
 function App() {
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
@@ -44,6 +37,14 @@ function App() {
   };
 
   // 🔥 FETCH DATA (SUDAH BERSIH)
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-out-cubic",
+      once: true, // WAJIB (biar gak animasi ulang terus)
+      offset: 80,
+    });
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,7 +86,7 @@ function App() {
     <>
       {/* Background Aurora */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[-1]">
-        <Aurora/>
+        <Aurora />
       </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ================= HOME ================= */}

@@ -17,10 +17,15 @@ import { uploadImage } from "../services/storage";
 import { supabase } from "../services/api";
 
 export default function Admin() {
-  const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
-  const TIMEOUT_DURATION = 6 * 60 * 60 * 1000; // 6 jam dalam milidetik
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("lastActivity");
+    navigate("/login", { replace: true });
+  };
+
+  const TIMEOUT_DURATION = 10 * 60 * 1000; // 10 menit
   // PROJECT STATE
   const [projects, setProjects] = useState([]);
   const [title, setTitle] = useState("");
@@ -51,58 +56,6 @@ export default function Admin() {
     const data = await getCertif();
     setCertificates(data);
   };
-
-  useEffect(() => {
-    // Cek Supabase session — tidak perlu login lagi
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/login"); // kalau tidak ada session, balik ke login
-      } else {
-        setReady(true);
-        fetchProjects();
-        fetchCertificates();
-      }
-    });
-  }, []);
-
-  // ================= AUTH =================
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
-  // Catat waktu aktivitas terakhir
-  const updateActivity = () => {
-    localStorage.setItem("lastActivity", Date.now());
-  };
-
-  // Cek apakah sudah timeout
-  const isTimedOut = () => {
-    const last = localStorage.getItem("lastActivity");
-    if (!last) return true;
-    return Date.now() - Number(last) > TIMEOUT_DURATION;
-  };
-
-  useEffect(() => {
-    // Catat aktivitas awal
-    updateActivity();
-
-    // Track aktivitas user (mouse, keyboard, scroll)
-    const events = ["mousemove", "keydown", "click", "scroll"];
-    events.forEach((e) => window.addEventListener(e, updateActivity));
-
-    // Cek timeout setiap 1 menit
-    const interval = setInterval(() => {
-      if (isTimedOut()) {
-        supabase.auth.signOut();
-        navigate("/login");
-      }
-    }, 60 * 1000); // cek tiap 1 menit
-
-    return () => {
-      events.forEach((e) => window.removeEventListener(e, updateActivity));
-      clearInterval(interval);
-    };
-  }, []);
 
   // ================= PROJECT =================
   const handleSubmit = async (e) => {
@@ -277,13 +230,6 @@ export default function Admin() {
     fetchCertificates();
   };
 
-  // ================= LOGIN VIEW =================
-  if (!ready)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
 
   // ================= MAIN =================
   return (

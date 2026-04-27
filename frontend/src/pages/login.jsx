@@ -11,7 +11,8 @@ export default function AdminLogin() {
     e.preventDefault()
     try {
       await login(email, password)
-      navigate("/admin") // ✅ ganti window.location.href — tidak full reload!
+      localStorage.setItem("loginTime", Date.now());
+      navigate("/admin")
     } catch (err) {
       alert(err.message)
     }
