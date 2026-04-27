@@ -20,7 +20,12 @@ import SkillsGrid from "./components/SkillsGrid/SkillsGrid";
 import CertifFolder from "./components/CertifFolder/CertifFolder";
 
 // ..
-AOS.init();
+AOS.init({
+  duration: 800,
+  easing: "ease-out-cubic",
+  once: true, // WAJIB (biar gak animasi ulang terus)
+  offset: 80,
+});
 
 function App() {
   const [projects, setProjects] = useState([]);
@@ -79,20 +84,14 @@ function App() {
   return (
     <>
       {/* Background Aurora */}
-      <div className="fixed top-0 left-0 w-full h-full -z-10">
-        <Aurora
-          colorStops={["#577870", "#1F97A6", "#127B99"]}
-          blend={0.5}
-          amplitude={1.0}
-          speed={0.5}
-        />
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[-1]">
+        <Aurora/>
       </div>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ================= HOME ================= */}
         <section
           id="home"
-          className="relative  min-h-[100dvh] flex items-center pb-32"
+          className="relative min-h-[100dvh] flex items-center pt-20 pb-32"
         >
           <div className="hero grid md:grid-cols-2 items-center pt-10 gap-6 w-full overflow-hidden">
             {/* Kiri */}
@@ -142,7 +141,7 @@ function App() {
             </div>
 
             {/* Kanan */}
-            <div className="md:ml-auto animate__animated animate__fadeInUp animate__delay-4s w-full md:w-auto flex justify-center md:block mt-6 md:mt-0">
+            <div className="md:ml-auto animate__animated animate__fadeInUp animate__delay-4s w-full md:w-auto flex -center md:block mt-6 md:mt-0">
               <ProfileCard
                 name="Refriyan Adrianto"
                 title="Web Developer"
@@ -177,7 +176,7 @@ function App() {
                 text="I’m Refriyan Adrianto,A Bachelor of Informatics (S.Kom) graduate from Institut Teknologi Nasional Bandung with expertise in web development and a strong foundation in machine learning. Developed a classification system for oil palm fruit ripeness using the Weighted Naive Bayes method to address imbalanced data challenges."
                 delay={150}
                 animateBy="words"
-                direction="top"
+                direction="middle"
                 className="text-lg leading-relaxed text-gray-300"
               />
             </div>

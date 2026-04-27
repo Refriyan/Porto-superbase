@@ -1,42 +1,75 @@
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
-const Navbar = ({ hidden = false }) => {
-  // ⛔ Saat hidden, jangan render apa pun
-  if (hidden) return null;
-
-  const [active, setActive] = useState(false);
+const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setActive(window.scrollY > 150);
-    handleScroll(); // init posisi saat mount
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = ["Home", "About", "Project", "Contact"];
+
   return (
-    <nav className="navbar relative z-50 py-7 flex items-center justify-between px-6 md:px-12">
-      {/* Logo */}
-      <div className="logo">
-        <h1 className="text-3xl font-bold text-white p-1 md:bg-transparent md:text-white">
+    <nav
+      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 
+      w-[95%] max-w-5xl rounded-2xl transition-all duration-300
+      ${
+        scrolled
+          ? "bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="flex items-center justify-between px-6 py-3">
+        {/* Logo */}
+        <h1 className="text-white font-semibold text-lg tracking-wide">
           Portofolio
         </h1>
+
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex items-center gap-8">
+          {navLinks.map((item) => (
+            <li key={item}>
+              <a
+                href={`#${item.toLowerCase()}`}
+                className="text-sm text-white/70 hover:text-white transition-colors duration-200"
+              >
+                {item}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {/* Mobile Button */}
+        <button
+          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
-      {/* Menu */}
-      <ul
-        className={`flex items-center sm:gap-10 gap-4 
-          md:static fixed left-1/2 -translate-x-1/2 md:translate-x-0 
-          md:opacity-100 bg-white/10 backdrop-blur-md 
-          md:bg-transparent md:backdrop-blur-none
-          p-4 rounded-br-2xl rounded-bl-2xl 
-          transition-all md:transition-none
-          ${active ? "top-0 opacity-100" : "-top-10 opacity-0"}`}
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden absolute left-0 top-full w-full transition-all duration-300
+        ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3 pointer-events-none"}`}
       >
-        <li><a href="#home" className="sm:text-lg text-base font-medium">Home</a></li>
-        <li><a href="#about" className="sm:text-lg text-base font-medium">About</a></li>
-        <li><a href="#project" className="sm:text-lg text-base font-medium">Project</a></li>
-        <li><a href="#contact" className="sm:text-lg text-base font-medium">Contact</a></li>
-      </ul>
+        <div className="mx-4 mt-3 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-xl p-6 flex flex-col items-center gap-5">
+          {navLinks.map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              onClick={() => setMenuOpen(false)}
+              className="text-lg font-medium text-white/80 hover:text-white transition"
+            >
+              {item}
+            </a>
+          ))}
+        </div>
+      </div>
     </nav>
   );
 };

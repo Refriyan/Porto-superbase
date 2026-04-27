@@ -24,7 +24,10 @@ export default function CountUp({
     stiffness,
   });
 
-  const isInView = useInView(ref, { once: true, margin: "0px" });
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-100px",
+  });
 
   const getDecimalPlaces = (num) => {
     const str = num.toString();
@@ -56,9 +59,12 @@ export default function CountUp({
         motionValue.set(direction === "down" ? from : to);
       }, delay * 1000);
 
-      const durationTimeoutId = setTimeout(() => {
-        if (typeof onEnd === "function") onEnd();
-      }, delay * 1000 + duration * 1000);
+      const durationTimeoutId = setTimeout(
+        () => {
+          if (typeof onEnd === "function") onEnd();
+        },
+        delay * 1000 + duration * 1000,
+      );
 
       return () => {
         clearTimeout(timeoutId);
@@ -90,7 +96,7 @@ export default function CountUp({
         };
 
         const formattedNumber = Intl.NumberFormat("en-US", options).format(
-          latest
+          latest,
         );
 
         ref.current.textContent = separator
