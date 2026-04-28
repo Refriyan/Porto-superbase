@@ -217,6 +217,23 @@
   flex-shrink: 0;
 }
 
+.project-hover-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-size: 11px;
+  color: rgb(0, 100, 249);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.3s ease;
+  font-display: var(--spotlight-color);
+}
+
+.chroma-card:hover .project-hover-indicator {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Responsive mobile */
 @media (max-width: 768px) {
   .tech-badge {
