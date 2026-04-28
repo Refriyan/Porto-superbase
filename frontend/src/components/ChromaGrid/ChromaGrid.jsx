@@ -152,7 +152,7 @@ export const ChromaGrid = ({
             )}
 
             {/* CTA */}
-            <button className="view-project-btn">View Details</button>
+            <div className="project-hover-indicator">Click to explore</div>
           </footer>
         </article>
       ))}
