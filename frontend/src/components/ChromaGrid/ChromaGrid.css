@@ -186,19 +186,47 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 10px;
   padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.15); /* merah transparan */
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  transition: 0.3s;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f4f5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  line-height: 1;
 }
 
 .tech-badge:hover {
-  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.1);
+}
+
+.tech-icon {
+  width: 10px;
+  height: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .tech-badge {
+    font-size: 9px;
+    padding: 4px 7px;
+    gap: 3px;
+  }
+
+  .tech-icon {
+    width: 8px;
+    height: 8px;
+  }
 }

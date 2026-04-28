@@ -1,16 +1,16 @@
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import "./ChromaGrid.css";
+import { techIcons } from "../../data";
 
-// Terima `onItemClick` di props
 export const ChromaGrid = ({
   items,
-  onItemClick, // Fungsi handler dari App.jsx
+  onItemClick,
   className = "",
-  radius = 300,
+  radius = 320,
   columns = 3,
   rows = 2,
-  damping = 0.45,
+  damping = 0.4,
   fadeOut = 0.6,
   ease = "power3.out",
 }) => {
@@ -20,16 +20,18 @@ export const ChromaGrid = ({
   const setY = useRef(null);
   const pos = useRef({ x: 0, y: 0 });
 
-  // Gunakan `items` yang di-pass dari App.jsx, bukan data demo
   const data = items?.length ? items : [];
 
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
+
     setX.current = gsap.quickSetter(el, "--x", "px");
     setY.current = gsap.quickSetter(el, "--y", "px");
+
     const { width, height } = el.getBoundingClientRect();
     pos.current = { x: width / 2, y: height / 2 };
+
     setX.current(pos.current.x);
     setY.current(pos.current.y);
   }, []);
@@ -40,18 +42,23 @@ export const ChromaGrid = ({
       y,
       duration: damping,
       ease,
+      overwrite: true,
       onUpdate: () => {
         setX.current?.(pos.current.x);
         setY.current?.(pos.current.y);
       },
-      overwrite: true,
     });
   };
 
   const handleMove = (e) => {
-    const r = rootRef.current.getBoundingClientRect();
-    moveTo(e.clientX - r.left, e.clientY - r.top);
-    gsap.to(fadeRef.current, { opacity: 0, duration: 0.25, overwrite: true });
+    const rect = rootRef.current.getBoundingClientRect();
+    moveTo(e.clientX - rect.left, e.clientY - rect.top);
+
+    gsap.to(fadeRef.current, {
+      opacity: 0,
+      duration: 0.25,
+      overwrite: true,
+    });
   };
 
   const handleLeave = () => {
@@ -65,14 +72,16 @@ export const ChromaGrid = ({
   const handleCardMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
     card.style.setProperty("--mouse-x", `${x}px`);
     card.style.setProperty("--mouse-y", `${y}px`);
   };
 
   return (
-    <div
+    <section
       ref={rootRef}
       className={`chroma-grid ${className}`}
       style={{
@@ -83,43 +92,74 @@ export const ChromaGrid = ({
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
     >
-      {data.map((c, i) => (
+      {data.map((project, i) => (
         <article
           key={i}
-          className="chroma-card"
+          className="chroma-card group"
           onMouseMove={handleCardMove}
-          // Panggil `onItemClick` saat kartu diklik dan kirim datanya
-          onClick={() => onItemClick(c)}
+          onClick={() => onItemClick(project)}
           style={{
-            "--card-border": c.borderColor || "transparent",
-            "--card-gradient": c.gradient,
-            cursor: "pointer", // Selalu pointer karena akan membuka modal
+            "--card-border": project.borderColor || "rgba(255,255,255,0.08)",
+            "--card-gradient":
+              project.gradient ||
+              "linear-gradient(135deg, rgba(0,255,255,0.08), rgba(128,0,255,0.08))",
+            cursor: "pointer",
           }}
         >
+          {/* IMAGE */}
           <div className="chroma-img-wrapper">
-            <img src={c.image} alt={c.title} loading="lazy" decoding="async" />
+            <img
+              src={project.image}
+              alt={project.title}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
+
+          {/* CONTENT */}
           <footer className="chroma-info">
-            <h3 className="name">{c.title}</h3>
-            {c.handle && <span className="handle">{c.handle}</span>}
-            <p className="role">{c.subtitle}</p>
-            {c.techStack && (
+            <div className="content-top">
+              <h3 className="name">{project.title}</h3>
+
+              <p className="role">
+                {project.subtitle?.length > 120
+                  ? `${project.subtitle.substring(0, 120)}...`
+                  : project.subtitle}
+              </p>
+            </div>
+
+            {/* TECH STACK */}
+            {project.techStack?.length > 0 && (
               <div className="tech-stack">
-                {c.techStack.split(",").map((tech, i) => (
-                  <span key={i} className="tech-badge">
-                    {tech.trim()}
-                  </span>
-                ))}
+                {(Array.isArray(project.techStack)
+                  ? project.techStack
+                  : project.techStack.split(",")
+                )
+                  .slice(0, 4)
+                  .map((tech, index) => (
+                    <span key={index} className="tech-badge">
+                      {techIcons[tech.trim().toLowerCase()] && (
+                        <img
+                          src={techIcons[tech.trim().toLowerCase()]}
+                          alt={tech}
+                          className="tech-icon"
+                        />
+                      )}
+                      {tech.trim()}
+                    </span>
+                  ))}
               </div>
             )}
 
-            {c.location && <span className="location">{c.location}</span>}
+            {/* CTA */}
+            <button className="view-project-btn">View Details</button>
           </footer>
         </article>
       ))}
+
       <div className="chroma-overlay" />
       <div ref={fadeRef} className="chroma-fade" />
-    </div>
+    </section>
   );
 };
 

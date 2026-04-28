@@ -49,3 +49,21 @@ export const listTools = [
   { id: 19, gambar: Tools19, nama: "MySql", ket: "Database", kategori: "Backend" },
   { id: 20, gambar: tools20, nama: "Python", ket: "Language", kategori: "Backend" },
 ]
+
+export const techIcons = {
+  react: Tools2,
+  "next js": Tools3,
+  tailwind: Tools4,
+  bootstrap: Tools5,
+  javascript: Tools6,
+  "node js": Tools7,
+  github: Tools8,
+  firebase: Tools13,
+  html: Tools14,
+  css: Tools15,
+  typescript: Tools16,
+  php: Tools17,
+  vite: Tools18,
+  mysql: Tools19,
+  python: tools20,
+};

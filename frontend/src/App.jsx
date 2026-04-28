@@ -242,10 +242,12 @@ function App() {
                 ...p,
                 title: p.title,
                 subtitle: p.description,
-                techStack: p.tech_stack,
+                techStack: p.tech_stack
+                  ? p.tech_stack.split(",").map((t) => t.trim())
+                  : [],
                 image: p.image_url,
-                githubUrl: p.github_url,
-                liveDemo: p.live_demo,
+                githubUrl: p.github_url || "",
+                liveDemo: p.live_demo || "",
               }))}
               onItemClick={handleProjectClick}
               radius={500}
