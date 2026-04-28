@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -20,8 +25,7 @@ import "aos/dist/aos.css";
 
 AOS.init();
 
-// 🔥 Layout wrapper
-const Layout = ({ children }) => {
+const PublicLayout = ({ children }) => {
   return (
     <div className="container mx-auto px-6">
       <Navbar />
@@ -31,43 +35,52 @@ const Layout = ({ children }) => {
   );
 };
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <PreLoader />
+const AppRouter = () => {
+  const location = useLocation();
+
+  const isSpecialPage =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/login");
+
+  return (
+    <>
+      {!isSpecialPage && <PreLoader />}
 
       <Routes>
+        {/* HOME */}
         <Route
           path="/"
           element={
-            <Layout>
+            <PublicLayout>
               <App />
-            </Layout>
+            </PublicLayout>
           }
         />
 
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <Login />
-            </Layout>
-          }
-        />
+        {/* LOGIN */}
+        <Route path="/login" element={<Login />} />
 
+        {/* ADMIN */}
         <Route
           path="/admin"
           element={
-            <Layout>
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            </Layout>
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
           }
         />
 
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+    </>
+  );
+};
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AppRouter />
     </BrowserRouter>
   </StrictMode>
 );
