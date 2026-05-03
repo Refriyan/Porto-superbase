@@ -189,12 +189,15 @@ export default function Dashboard({
                   { label: "Certificates", value: certificates.length },
                   { label: "Status", value: "Active" },
                 ].map((item, i) => (
-                  <div key={i} className={`${cardStyle} p-6`}>
+                  <form
+                    onSubmit={editing ? handleUpdate : handleSubmit}
+                    className={`${cardStyle} p-5 space-y-4`}
+                  >
                     <p className="text-gray-400 text-sm">{item.label}</p>
                     <h2 className="text-3xl font-bold mt-2 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                       {item.value}
                     </h2>
-                  </div>
+                  </form>
                 ))}
               </div>
             )}
@@ -203,7 +206,10 @@ export default function Dashboard({
             {activeTab === "projects" && (
               <div className="grid lg:grid-cols-3 gap-6">
                 {/* FORM */}
-                <div className={`${cardStyle} p-5 space-y-4`}>
+                <form
+                  onSubmit={editing ? handleUpdate : handleSubmit}
+                  className={`${cardStyle} p-5 space-y-4`}
+                >
                   <Input
                     placeholder="Title"
                     value={title}
@@ -258,10 +264,13 @@ export default function Dashboard({
                     />
                   )}
 
-                  <Button className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl">
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl"
+                  >
                     {editing ? "Update Project" : "Create Project"}
                   </Button>
-                </div>
+                </form>
 
                 {/* LIST */}
                 <div className="lg:col-span-2 grid md:grid-cols-2 gap-5">
@@ -305,7 +314,10 @@ export default function Dashboard({
             {activeTab === "certificates" && (
               <div className="grid lg:grid-cols-3 gap-6">
                 {/* FORM */}
-                <div className={`${cardStyle} p-5 space-y-4`}>
+                <form
+                  onSubmit={editing ? handleUpdate : handleSubmit}
+                  className={`${cardStyle} p-5 space-y-4`}
+                >
                   <Input
                     placeholder="Name"
                     value={certName}
@@ -355,10 +367,13 @@ export default function Dashboard({
                     />
                   )}
 
-                  <Button className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl">
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl"
+                  >
                     {editingCert ? "Update Certificate" : "Create Certificate"}
                   </Button>
-                </div>
+                </form>
 
                 {/* LIST */}
                 <div className="lg:col-span-2 grid md:grid-cols-2 gap-5">
