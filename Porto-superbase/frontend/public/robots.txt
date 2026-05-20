@@ -5,4 +5,4 @@ Allow: /
 Disallow: /admin
 Disallow: /login
 
-Sitemap: https://refriyan.vercel.app/sitemap.xml
+Sitemap: https://refriyan.web.id/sitemap.xml
