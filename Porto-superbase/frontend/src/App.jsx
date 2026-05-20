@@ -21,6 +21,11 @@ import CertifFolder from "./components/CertifFolder/CertifFolder";
 
 // ..
 function App() {
+  useEffect(() => {
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null); // null = modal tertutup
@@ -30,10 +35,14 @@ function App() {
 
   // SEO: Set dynamic title & meta
   useEffect(() => {
-    document.title = "Refriyan Adrianto — Web Developer & IT Pekanbaru | Portofolio";
+    document.title =
+      "Refriyan Adrianto — Web Developer & IT Pekanbaru | Portofolio";
     const metaDesc = document.querySelector("meta[name='description']");
     if (metaDesc) {
-      metaDesc.setAttribute("content", "Refriyan Adrianto, Web Developer & IT profesional dari Pekanbaru, Riau. Ahli React, Next.js, Node.js, Python, dan Machine Learning.");
+      metaDesc.setAttribute(
+        "content",
+        "Refriyan Adrianto, Web Developer & IT profesional dari Pekanbaru, Riau. Ahli React, Next.js, Node.js, Python, dan Machine Learning.",
+      );
     }
   }, []);
 
