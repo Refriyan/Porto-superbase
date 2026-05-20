@@ -4,7 +4,7 @@ import { supabase } from "./api";
 export const getProjects = async () => {
   const { data, error } = await supabase
     .from("projects")
-    .select("")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) throw error;

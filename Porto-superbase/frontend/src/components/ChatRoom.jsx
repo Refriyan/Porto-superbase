@@ -2,18 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "../services/api";
 
 export default function ChatRoom() {
-  return <div>Chat Loaded ✅</div>;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [user, setUser] = useState(null);
   const [typing, setTyping] = useState(null);
   const bottomRef = useRef();
 
-  // 🔐 LOGIN ANON
+  // 🔐 LOGIN ANON — BUG FIX: setUser setelah signInAnonymously berhasil
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
-        supabase.auth.signInAnonymously();
+        supabase.auth.signInAnonymously().then(({ data: anonData }) => {
+          if (anonData?.user) setUser(anonData.user);
+        });
       } else {
         setUser(data.user);
       }
@@ -25,12 +26,13 @@ export default function ChatRoom() {
     if (!user) return;
 
     const fetchMessages = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("messages")
         .select("*")
         .order("created_at", { ascending: true });
 
-      setMessages(data);
+      // BUG FIX: data bisa null jika query error
+      if (!error && data) setMessages(data);
     };
 
     fetchMessages();
@@ -72,9 +74,9 @@ export default function ChatRoom() {
     return () => supabase.removeChannel(channel);
   }, []);
 
-  // 📤 SEND MESSAGE
+  // 📤 SEND MESSAGE — BUG FIX: guard user null sebelum akses user.id
   const handleSend = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() || !user) return;
 
     await supabase.from("messages").insert([
       {
@@ -134,6 +136,7 @@ export default function ChatRoom() {
           onChange={(e) => handleTyping(e.target.value)}
           placeholder="Type message..."
           className="flex-1 p-2 bg-zinc-800 border border-zinc-700 rounded-lg"
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
         <button
           onClick={handleSend}

@@ -1,16 +1,16 @@
 import { supabase } from "./api";
 
-export const uploadImage = async (file) => {
+export const uploadImage = async (file, bucket = "projects") => {
   const fileName = `${Date.now()}-${file.name}`;
 
   const { error } = await supabase.storage
-    .from("projects")
+    .from(bucket)
     .upload(fileName, file);
 
   if (error) throw error;
 
   const { data } = supabase.storage
-    .from("projects")
+    .from(bucket)
     .getPublicUrl(fileName);
 
   return data.publicUrl;

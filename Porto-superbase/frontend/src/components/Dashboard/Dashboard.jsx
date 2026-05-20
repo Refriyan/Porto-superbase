@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -48,12 +47,6 @@ export default function Dashboard({
   const [certPreview, setCertPreview] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 800);
-  }, []);
-
   const handleDrop = (e, setFile, setPreview) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
@@ -63,10 +56,6 @@ export default function Dashboard({
     }
   };
 
-  const Skeleton = () => (
-    <div className="animate-pulse bg-white/10 rounded-lg h-40 w-full" />
-  );
-
   useEffect(() => {
     if (editing) {
       setTitle(editing.title || "");
@@ -75,6 +64,8 @@ export default function Dashboard({
       setGithubUrl(editing.github_url || "");
       setLiveDemo(editing.live_demo || "");
       setPreview(editing.image_url || null);
+    } else {
+      setPreview(null);
     }
   }, [editing, setTitle, setDescription, setTech, setGithubUrl, setLiveDemo]);
 
@@ -85,6 +76,8 @@ export default function Dashboard({
       setYear(editingCert.year || "");
       setCredentialUrl(editingCert.credential_url || "");
       setCertPreview(editingCert.image_url || null);
+    } else {
+      setCertPreview(null);
     }
   }, [editingCert, setCertName, setIssuer, setYear, setCredentialUrl]);
 
@@ -102,8 +95,6 @@ export default function Dashboard({
   );
   const cardStyle =
     "bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300";
-
-  const glass = "bg-white/5 backdrop-blur-xl border border-white/10";
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#020617] text-white">
@@ -264,12 +255,23 @@ export default function Dashboard({
                     />
                   )}
 
+                  <div className="flex gap-2">
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl"
                   >
                     {editing ? "Update Project" : "Create Project"}
                   </Button>
+                  {editing && (
+                    <Button
+                      type="button"
+                      className="w-full bg-gray-600 hover:bg-gray-700 rounded-xl"
+                      onClick={() => handleEdit(null)}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                  </div>
                 </form>
 
                 {/* LIST */}
@@ -370,12 +372,23 @@ export default function Dashboard({
                     />
                   )}
 
+                  <div className="flex gap-2">
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl"
                   >
                     {editingCert ? "Update Certificate" : "Create Certificate"}
                   </Button>
+                  {editingCert && (
+                    <Button
+                      type="button"
+                      className="w-full bg-gray-600 hover:bg-gray-700 rounded-xl"
+                      onClick={() => handleEditCert(null)}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                  </div>
                 </form>
 
                 {/* LIST */}

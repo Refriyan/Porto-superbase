@@ -12,7 +12,6 @@ import {
   deleteCertif,
   updateCertif,
 } from "../services/certif";
-import { login } from "../services/auth";
 import { uploadImage } from "../services/storage";
 import { supabase } from "../services/api";
 import Dashboard from "../components/Dashboard/Dashboard";
@@ -23,11 +22,10 @@ export default function Admin() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem("lastActivity");
+    localStorage.removeItem("loginTime");
     navigate("/login", { replace: true });
   };
 
-  const TIMEOUT_DURATION = 10 * 60 * 1000; // 10 menit
   // PROJECT STATE
   const [projects, setProjects] = useState([]);
   const [title, setTitle] = useState("");
@@ -37,7 +35,6 @@ export default function Admin() {
   const [liveDemo, setLiveDemo] = useState("");
   const [image, setImage] = useState(null);
   const [editing, setEditing] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   // CERTIFICATE STATE
   const [certificates, setCertificates] = useState([]);
@@ -50,26 +47,31 @@ export default function Admin() {
 
   // ================= FETCH =================
   const fetchProjects = async () => {
-    const data = await getProjects();
-    setProjects(data);
+    try {
+      const data = await getProjects();
+      setProjects(data);
+    } catch (err) {
+      console.error("Gagal fetch projects:", err);
+    }
   };
 
   const fetchCertificates = async () => {
-    const data = await getCertif();
-    setCertificates(data);
+    try {
+      const data = await getCertif();
+      setCertificates(data);
+    } catch (err) {
+      console.error("Gagal fetch certificates:", err);
+    }
   };
 
+  // Fetch sekali saat mount - tidak duplikat
   useEffect(() => {
-    getProjects().then(setProjects);
-  }, []);
-
-  useEffect(() => {
-    getCertif().then(setCertificates);
+    fetchProjects();
+    fetchCertificates();
   }, []);
   // ================= PROJECT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
       let imagePath = null;
@@ -94,12 +96,10 @@ export default function Admin() {
       alert("Gagal upload");
     }
 
-    setLoading(false);
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
       let imagePath = editing.image_url;
@@ -124,7 +124,6 @@ export default function Admin() {
       alert("Gagal update");
     }
 
-    setLoading(false);
   };
 
   const handleDelete = async (id) => {
@@ -135,6 +134,7 @@ export default function Admin() {
   };
 
   const handleEdit = (p) => {
+    if (!p) { resetForm(); return; }
     setEditing(p);
     setTitle(p.title);
     setDescription(p.description);
@@ -186,7 +186,7 @@ export default function Admin() {
       let imagePath = null;
 
       if (certImage) {
-        imagePath = await uploadImage(certImage);
+        imagePath = await uploadImage(certImage, "certificates");
       }
 
       await createCertif({
@@ -212,6 +212,11 @@ export default function Admin() {
   };
 
   const handleEditCert = (c) => {
+    if (!c) {
+      setEditingCert(null);
+      setCertName(""); setIssuer(""); setYear(""); setCredentialUrl(""); setCertImage(null);
+      return;
+    }
     setEditingCert(c);
     setCertName(c.title);
     setIssuer(c.issuer);
@@ -225,7 +230,7 @@ export default function Admin() {
       let imagePath = editingCert.image_url;
 
       if (certImage) {
-        imagePath = await uploadImage(certImage);
+        imagePath = await uploadImage(certImage, "certificates");
       }
 
       await updateCertif(editingCert.id, {

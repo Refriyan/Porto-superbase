@@ -28,6 +28,15 @@ function App() {
   const aboutRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  // SEO: Set dynamic title & meta
+  useEffect(() => {
+    document.title = "Refriyan Adrianto — Web Developer & IT Pekanbaru | Portofolio";
+    const metaDesc = document.querySelector("meta[name='description']");
+    if (metaDesc) {
+      metaDesc.setAttribute("content", "Refriyan Adrianto, Web Developer & IT profesional dari Pekanbaru, Riau. Ahli React, Next.js, Node.js, Python, dan Machine Learning.");
+    }
+  }, []);
+
   const handleProjectClick = (project) => {
     setSelectedProject(project);
   };

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Blokir halaman admin dari index Google
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://refriyan.vercel.app/sitemap.xml
