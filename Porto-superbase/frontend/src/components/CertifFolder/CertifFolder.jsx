@@ -1,11 +1,5 @@
 import { useState } from "react";
 import "./CertifFolder.css";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination } from "swiper/modules";
-
-import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
 
 export default function CertifFolder({ certificates }) {
   const [openFolder, setOpenFolder] = useState(null);
@@ -85,61 +79,43 @@ export default function CertifFolder({ certificates }) {
             </button>
           </div>
 
-          <Swiper
-            effect={"coverflow"}
-            grabCursor={true}
-            centeredSlides={true}
-            slidesPerView={"auto"}
-            initialSlide={1}
-            coverflowEffect={{
-              rotate: 25,
-              stretch: 0,
-              depth: 120,
-              modifier: 1,
-              slideShadows: false,
-              scale: 0.9,
-            }}
-            pagination={{ clickable: true }}
-            modules={[EffectCoverflow, Pagination]}
-            className="certSwiper"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {grouped[openFolder].map((cert) => (
-              <SwiperSlide key={cert.id} className="max-w-[320px]">
-                <div
-                  onClick={() => setSelectedCert(cert)}
-                  className="cert-card"
-                >
-                  {cert.image_url && (
-                    <img
-                      src={cert.image_url}
-                      alt={cert.title}
-                      loading="lazy"
-                      className="cert-image"
-                    />
+              <div
+                key={cert.id}
+                onClick={() => setSelectedCert(cert)}
+                className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+              >
+                {cert.image_url && (
+                  <img
+                    src={cert.image_url}
+                    alt={cert.title}
+                    loading="lazy"
+                    className="w-full h-36 object-cover"
+                  />
+                )}
+                <div className="p-3">
+                  <p className="text-sm font-semibold line-clamp-2">
+                    {cert.title}
+                  </p>
+                  <p className="text-xs text-purple-400 mt-1">
+                    {cert.issuer} • {cert.year}
+                  </p>
+                  {cert.credential_url && (
+                    <a
+                      href={cert.credential_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:underline"
+                    >
+                      View Credential ↗
+                    </a>
                   )}
-
-                  <div className="cert-content">
-                    <h3>{cert.title}</h3>
-
-                    <p>
-                      {cert.issuer} • {cert.year}
-                    </p>
-
-                    {cert.credential_url && (
-                      <a
-                        href={cert.credential_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View Credential ↗
-                      </a>
-                    )}
-                  </div>
                 </div>
-              </SwiperSlide>
+              </div>
             ))}
-          </Swiper>
+          </div>
         </div>
       )}
 

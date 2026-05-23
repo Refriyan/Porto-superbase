@@ -14,18 +14,13 @@ import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import { getProjects } from "./services/project";
 import { getCertif } from "./services/certif";
-import ChatRoom from "./components/ChatRoom";
+import ChatBot from "./components/ChatBot";
 import { FaEnvelope, FaInstagram } from "react-icons/fa";
 import SkillsGrid from "./components/SkillsGrid/SkillsGrid";
 import CertifFolder from "./components/CertifFolder/CertifFolder";
 
 // ..
 function App() {
-  useEffect(() => {
-    window.history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
-  }, []);
-  
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null); // null = modal tertutup
@@ -35,14 +30,10 @@ function App() {
 
   // SEO: Set dynamic title & meta
   useEffect(() => {
-    document.title =
-      "Refriyan Adrianto — Web Developer & IT Pekanbaru | Portofolio";
+    document.title = "Refriyan Adrianto — Web Developer & IT Pekanbaru | Portofolio";
     const metaDesc = document.querySelector("meta[name='description']");
     if (metaDesc) {
-      metaDesc.setAttribute(
-        "content",
-        "Refriyan Adrianto, Web Developer & IT profesional dari Pekanbaru, Riau. Ahli React, Next.js, Node.js, Python, dan Machine Learning.",
-      );
+      metaDesc.setAttribute("content", "Refriyan Adrianto, Web Developer & IT profesional dari Pekanbaru, Riau. Ahli React, Next.js, Node.js, Python, dan Machine Learning.");
     }
   }, []);
 
@@ -110,9 +101,9 @@ function App() {
         {/* ================= HOME ================= */}
         <section
           id="home"
-          className="relative min-h-[100dvh] flex items-center pt-20 pb-32"
+          className="relative min-h-[100dvh] flex items-center pt-20 pb-32 overflow-visible"
         >
-          <div className="hero grid md:grid-cols-2 items-center pt-10 gap-6 w-full overflow-hidden">
+          <div className="hero grid md:grid-cols-2 items-center pt-10 gap-10 md:gap-6 w-full">
             {/* Kiri */}
             <div className="animate__animated animate__fadeInUp animate__delay-3s">
               <div className="flex items-center gap-3 mb-6 bg-zinc-800 w-fit p-4 rounded-2xl">
@@ -125,7 +116,7 @@ function App() {
                 <q>Fatigue is temporary, effort lasts longer.</q>
               </div>
 
-              <h1 className="text-5xl font-bold mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
                 <ShinyText
                   text="Hi I'm Refriyan Adrianto"
                   disabled={false}
@@ -141,7 +132,7 @@ function App() {
                 className="mb-6"
               />
 
-              <div className="flex items-center sm:gap-4 gap-2">
+              <div className="flex items-center sm:gap-4 gap-2 flex-wrap">
                 <a
                   href="./assets/CV.pdf"
                   download
@@ -159,19 +150,22 @@ function App() {
               </div>
             </div>
 
-            {/* Kanan */}
-            <div className="md:ml-auto animate__animated animate__fadeInUp animate__delay-4s w-full md:w-auto flex -center md:block mt-6 md:mt-0">
-              <ProfileCard
-                name="Refriyan Adrianto"
-                title="Web Developer"
-                handle="refriyan_"
-                status="Online"
-                contactText="Contact Me"
-                avatarUrl="./assets/ref.png"
-                showUserInfo
-                enableTilt
-                enableMobileTilt={false}
-              />
+            {/* Kanan — ProfileCard */}
+            <div className="flex justify-center md:justify-end animate__animated animate__fadeInUp animate__delay-4s w-full mt-4 md:mt-0 md:pl-8">
+              <div className="w-full max-w-[300px] sm:max-w-[340px] md:max-w-none md:w-fit mx-auto md:mx-0 md:mr-0">
+                <ProfileCard
+                  name="Refriyan Adrianto"
+                  title="Web Developer"
+                  handle="refriyan_"
+                  status="Online"
+                  contactText="Contact Me"
+                  avatarUrl="./assets/ref.png"
+                  showUserInfo
+                  enableTilt
+                  enableMobileTilt={false}
+                  showBehindGradient={false}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -179,7 +173,7 @@ function App() {
         {/* ================= ABOUT ================= */}
         <section
           id="about"
-          className="mt-24 mx-auto w-full max-w-7xl rounded-3xl border-[5px] border-red-500/40 shadow-[0_0_30px_rgba(239,68,68,0.4)] bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1a1a] p-10"
+          className="mt-24 mx-auto w-full max-w-7xl rounded-3xl border-[5px] border-red-500/40 shadow-[0_0_30px_rgba(239,68,68,0.4)] bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#1a1a1a] p-5 sm:p-10"
         >
           <div
             className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center relative"
@@ -292,112 +286,125 @@ function App() {
           <CertifFolder certificates={certificates} />
         </div>
 
-        {/* Kontak */}
-        <div className="kontak mt-32 sm:p-10 p-0" id="contact">
-          <h1 className="text-4xl mb-2 font-bold text-center">
-            Contact & Chat
-          </h1>
-          <p className="text-base text-center mb-10 opacity-50">
-            Get in touch with me or chat in real-time
-          </p>
+        {/* ================= CONTACT ================= */}
+        <div className="kontak mt-32 px-0" id="contact" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
 
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* ===== LEFT: CHAT / INFO ===== */}
-            <div className="flex-1 bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 p-6 rounded-2xl shadow-lg flex flex-col justify-between">
-              <ChatRoom />
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Let's Talk 👋</h2>
-                <p className="text-sm text-gray-400 mb-6">
-                  Feel free to reach out for collaboration, project, or just say
-                  hi.
-                </p>
+          {/* Header */}
+          <div className="text-center mb-14">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-3">
+              Get Ready To Create<br className="hidden sm:block" /> Something Great
+            </h1>
+            <p className="text-base text-white/40 max-w-md mx-auto">
+              Have a project in mind or just want to say hi? I'd love to hear from you.
+            </p>
+          </div>
 
-                {/* FAKE CHAT */}
-                <div className="space-y-4">
-                  <div className="bg-zinc-800 p-3 rounded-lg w-fit max-w-xs">
-                    Hi, are you available for a project?
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
 
-                  <div className="bg-purple-600 p-3 rounded-lg w-fit max-w-xs ml-auto">
-                    Yes! Let’s discuss 🚀
+            {/* ===== LEFT: Info + Chat ===== */}
+            <div className="flex flex-col gap-6">
+
+              {/* Info Card */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-7 backdrop-blur-sm">
+                <h2 className="text-xl font-bold mb-6 text-white">Let's Connect</h2>
+                <div className="flex flex-col gap-4">
+                  <a href="mailto:refriyanadrianto@gmail.com" className="flex items-center gap-4 group">
+                    <div className="w-11 h-11 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center shrink-0 group-hover:bg-yellow-400/20 transition-all">
+                      <FaEnvelope className="text-yellow-400 text-lg" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40 mb-0.5">Email</p>
+                      <p className="text-sm text-white font-medium break-all">refriyanadrianto@gmail.com</p>
+                    </div>
+                  </a>
+
+                  <a href="https://instagram.com/refriyan_" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                    <div className="w-11 h-11 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center shrink-0 group-hover:bg-pink-500/20 transition-all">
+                      <FaInstagram className="text-pink-400 text-lg" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40 mb-0.5">Instagram</p>
+                      <p className="text-sm text-white font-medium">@refriyan_</p>
+                    </div>
+                  </a>
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                      <svg className="text-blue-400 w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40 mb-0.5">Location</p>
+                      <p className="text-sm text-white font-medium">Pekanbaru, Riau, Indonesia</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* CONTACT INFO */}
-              <div className="flex place-items-center gap-4 mt-4">
-                {/* EMAIL */}
-                <a
-                  href="mailto:refriyanadrianto@gmail.com"
-                  title="Send Email"
-                  className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:scale-110 hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-300"
-                >
-                  <FaEnvelope className="text-white text-lg" /> Email
-                </a>
-
-                {/* INSTAGRAM */}
-                <a
-                  href="https://instagram.com/refriyan_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:scale-110 hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-300"
-                >
-                  <FaInstagram className="text-white text-lg" /> Instagram
-                </a>
+              {/* Chat Card */}
+              <div className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm flex flex-col min-h-[320px]">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
+                  <span className="text-xs text-white/50 font-medium">AI Assistant — Powered by Claude</span>
+                </div>
+                <div className="flex-1">
+                  <ChatBot />
+                </div>
               </div>
             </div>
 
-            {/* ===== RIGHT: FORM ===== */}
-            <div className="flex-1">
+            {/* ===== RIGHT: Form ===== */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-7 backdrop-blur-sm h-fit">
+              <h2 className="text-xl font-bold mb-2 text-white">Send a Message</h2>
+              <p className="text-sm text-white/40 mb-7">I'll get back to you within 24 hours.</p>
+
               <form
                 action="https://formsubmit.co/refriyanadrianto@gmail.com"
                 method="POST"
-                className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 p-8 rounded-2xl shadow-lg"
                 autoComplete="off"
+                className="flex flex-col gap-5"
               >
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <label className="text-sm text-gray-400">Full Name</label>
-                    <input
-                      type="text"
-                      name="Name"
-                      placeholder="Your name..."
-                      className="w-full mt-1 p-3 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_subject" value="New message from Portfolio!" />
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="text-sm text-gray-400">Email</label>
-                    <input
-                      type="email"
-                      name="Email"
-                      autoComplete="email"
-                      placeholder="Your email..."
-                      className="w-full mt-1 p-3 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
+                    <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Full Name</label>
+                    <input type="text" name="Name" placeholder="Md Jasim Islam"
+                      className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition"
+                      required />
                   </div>
-
                   <div>
-                    <label className="text-sm text-gray-400">Message</label>
-                    <textarea
-                      name="message"
-                      rows="5"
-                      autoComplete="message"
-                      placeholder="Write your message..."
-                      className="w-full mt-1 p-3 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
+                    <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Email</label>
+                    <input type="email" name="Email" placeholder="Your Email"
+                      className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition"
+                      required />
                   </div>
-
-                  <button
-                    type="submit"
-                    className="mt-2 py-3 rounded-xl font-semibold bg-gradient-to-r from-red-600 to-blue-600 hover:opacity-90 transition"
-                  >
-                    Send Message 🚀
-                  </button>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Phone Number</label>
+                    <input type="tel" name="Phone" placeholder="Phone Number"
+                      className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Subject</label>
+                    <input type="text" name="Subject" placeholder="Subject"
+                      className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Message</label>
+                  <textarea name="message" rows="5" placeholder="Your Message"
+                    className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition resize-none"
+                    required />
+                </div>
+
+                <button type="submit"
+                  className="w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase bg-yellow-400 hover:bg-yellow-300 text-zinc-900 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-yellow-400/20">
+                  Submit Now →
+                </button>
               </form>
             </div>
           </div>

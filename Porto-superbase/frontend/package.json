@@ -1,17 +1,16 @@
 {
-  "name": "c",
+  "name": "portofolio-main",
   "version": "1.0.0",
   "description": "Selamat datang di portofolio web pribadi saya! 🌐 Dibuat dengan React + Vite, ini adalah showcase dari project, skill, dan karya yang ingin saya bagikan.",
-  "keywords": [],
-  "license": "ISC",
-  "author": "",
   "type": "module",
-  "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
@@ -30,11 +29,11 @@
     "react-icons": "^5.6.0",
     "react-router-dom": "^7.13.0",
     "remixicon": "^4.9.1",
-    "swiper": "^12.1.4",
     "tailwindcss": "^3.4.19"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.3",
     "vite": "^7.3.1"
-  }
+  },
+  "main": "eslint.config.js"
 }

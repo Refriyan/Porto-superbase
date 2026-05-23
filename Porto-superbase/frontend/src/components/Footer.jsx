@@ -27,7 +27,7 @@ const Footer = () => {
         </div>
 
         {/* Dock - paling bawah di mobile */}
-        <div className="order-3 md:order-0 mt-15 md:mt-0  md:mb-0">
+        <div className="order-3 md:order-0 mt-4 md:mt-0">
           <Dock 
             items={items}
             panelHeight={30}

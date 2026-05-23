@@ -487,24 +487,26 @@
     border-radius: 50px;
   }
 }
-@media (max-width: 480px) {
-  .pc-card-wrapper {
-    max-width: 280px;
-    margin: 0 auto;
-  }
-  .pc-card {
-    height: 50svh;
-    max-height: 350px;
-  }
-}
-
+/* Mobile — tablet ke bawah */
 @media (max-width: 768px) {
   .pc-card-wrapper {
     max-width: 300px;
     margin: 0 auto;
   }
   .pc-card {
-    height: 55svh !important;
-    max-height: 380px !important;
+    height: 55svh;
+    max-height: 380px;
+  }
+}
+
+/* Mobile — HP kecil */
+@media (max-width: 480px) {
+  .pc-card-wrapper {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+  .pc-card {
+    height: 48svh;
+    max-height: 320px;
   }
 }
