@@ -369,7 +369,7 @@ function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="text-xs text-white/40 uppercase tracking-wider mb-2 block">Full Name</label>
-                    <input type="text" name="Name" placeholder="Md Jasim Islam"
+                    <input type="text" name="Name" placeholder="Refriyan Adrianto"
                       className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/40 transition"
                       required />
                   </div>
