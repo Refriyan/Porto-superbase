@@ -21,9 +21,9 @@ const Footer = () => {
 
         {/* Ikon Sosmed - di tengah di mobile */}
         <div className="flex gap-3 order-2 md:order-0">
-          <a href="https://github.com/refriyan"><i className="ri-github-fill ri-2x"></i></a>
-          <a href="https://www.instagram.com/refriyan_/"><i className="ri-instagram-fill ri-2x"></i></a>
-          <a href="https://www.linkedin.com/in/refriyan-adrianto-7b2b1b20a/"><i className="ri-linkedin-fill ri-2x"></i></a>
+          <a href="https://github.com/refriyan" target="_blank" rel="noopener noreferrer"><i className="ri-github-fill ri-2x"></i></a>
+          <a href="https://www.instagram.com/refriyan_/" target="_blank" rel="noopener noreferrer"><i className="ri-instagram-fill ri-2x"></i></a>
+          <a href="https://www.linkedin.com/in/refriyan-adrianto-7b2b1b20a/" target="_blank" rel="noopener noreferrer"><i className="ri-linkedin-fill ri-2x"></i></a>
         </div>
 
         {/* Dock - paling bawah di mobile */}

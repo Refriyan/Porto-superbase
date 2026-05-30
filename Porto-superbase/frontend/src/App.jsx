@@ -272,7 +272,7 @@ function App() {
         {/* Proyek */}
 
         {/* ================= CERTIFICATE ================= */}
-        <div
+        <section
           className="mt-32"
           id="certificate"
           data-aos="fade-up"
@@ -284,10 +284,10 @@ function App() {
             My certifications and achievements
           </p>
           <CertifFolder certificates={certificates} />
-        </div>
+        </section>
 
         {/* ================= CONTACT ================= */}
-        <div className="kontak mt-32 px-0" id="contact" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
+        <section className="kontak mt-32 px-0" id="contact" data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
 
           {/* Header */}
           <div className="text-center mb-14">
@@ -408,7 +408,7 @@ function App() {
               </form>
             </div>
           </div>
-        </div>
+        </section>
         {/* Kontak */}
       </main>
 

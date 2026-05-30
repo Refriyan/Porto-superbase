@@ -1,13 +1,199 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./CertifFolder.css";
+
+// ─────────────────────────────────────────
+// Swiper Card
+// ─────────────────────────────────────────
+function SwiperCard({ cert, onClick }) {
+  return (
+    <motion.div
+      whileHover={{ y: -6, scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => onClick(cert)}
+      className="cf-card"
+    >
+      <div className="cf-card__img">
+        {cert.image_url
+          ? <img src={cert.image_url} alt={cert.title} loading="lazy" />
+          : <div className="cf-card__placeholder">🏆</div>
+        }
+        <span className="cf-card__year">{cert.year}</span>
+      </div>
+      <div className="cf-card__body">
+        <p className="cf-card__title">{cert.title}</p>
+        <p className="cf-card__issuer">{cert.issuer}</p>
+        {cert.credential_url && (
+          <a
+            href={cert.credential_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            className="cf-card__link"
+          >
+            View Credential ↗
+          </a>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────
+// Folder Item (animasi CSS folder asli)
+// ─────────────────────────────────────────
+function FolderItem({ issuer, certs, isOpen, color, onToggle, onCertClick }) {
+  const trackRef = useRef(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(true);
+
+  const scroll = (dir) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 280, behavior: "smooth" });
+    setTimeout(() => {
+      setCanLeft(el.scrollLeft > 0);
+      setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    }, 350);
+  };
+
+  return (
+    <div className="cf-folder-wrap">
+      {/* ── Folder icon (CSS animasi asli) ── */}
+      <button
+        onClick={onToggle}
+        className={`cf-folder-btn ${isOpen ? "cf-folder-btn--active" : ""}`}
+      >
+        <div className={`folder ${isOpen ? "open" : ""}`}
+          style={{ "--folder-color": color, "--folder-back-color": color + "cc" }}>
+          <div className="folder__back">
+            {certs.slice(0, 3).map((cert, i) => (
+              <div key={i} className="paper">
+                {cert.image_url && (
+                  <img src={cert.image_url} alt={cert.title}
+                    className="w-full h-full object-cover rounded" />
+                )}
+              </div>
+            ))}
+            <div className="folder__front" />
+          </div>
+        </div>
+
+        <p className="cf-folder-btn__name">{issuer}</p>
+        <p className="cf-folder-btn__count">{certs.length} certificate{certs.length > 1 ? "s" : ""}</p>
+      </button>
+
+      {/* ── Swiper panel muncul di bawah saat open ── */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="panel"
+            initial={{ opacity: 0, height: 0, y: -8 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="cf-panel"
+            style={{ "--accent": color }}
+          >
+            {/* Panel header */}
+            <div className="cf-panel__header">
+              <span className="cf-panel__dot" style={{ background: color }} />
+              <span className="cf-panel__title">{issuer}</span>
+              <span className="cf-panel__count">{certs.length} certs</span>
+              <div className="cf-panel__arrows">
+                <button
+                  onClick={() => scroll(-1)}
+                  disabled={!canLeft}
+                  className={`cf-panel__arrow ${!canLeft ? "cf-panel__arrow--disabled" : ""}`}
+                >‹</button>
+                <button
+                  onClick={() => scroll(1)}
+                  disabled={!canRight}
+                  className={`cf-panel__arrow ${!canRight ? "cf-panel__arrow--disabled" : ""}`}
+                >›</button>
+              </div>
+              <button onClick={onToggle} className="cf-panel__close">✕ Tutup</button>
+            </div>
+
+            {/* Swiper track */}
+            <div
+              ref={trackRef}
+              className="cf-panel__track"
+              onScroll={e => {
+                setCanLeft(e.target.scrollLeft > 0);
+                setCanRight(e.target.scrollLeft + e.target.clientWidth < e.target.scrollWidth - 4);
+              }}
+            >
+              {certs.map(cert => (
+                <SwiperCard key={cert.id} cert={cert} onClick={onCertClick} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────
+// Modal detail
+// ─────────────────────────────────────────
+function CertModal({ cert, onClose }) {
+  if (!cert) return null;
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="cf-modal__overlay" onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.88, opacity: 0, y: 32 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.88, opacity: 0, y: 32 }}
+          transition={{ type: "spring", stiffness: 280, damping: 24 }}
+          className="cf-modal__box"
+          onClick={e => e.stopPropagation()}
+        >
+          {cert.image_url && (
+            <div className="cf-modal__img">
+              <img src={cert.image_url} alt={cert.title} />
+            </div>
+          )}
+          <div className="cf-modal__body">
+            <h3 className="cf-modal__title">{cert.title}</h3>
+            <p className="cf-modal__meta">{cert.issuer} · {cert.year}</p>
+            <div className="cf-modal__actions">
+              {cert.credential_url && (
+                <a href={cert.credential_url} target="_blank" rel="noopener noreferrer"
+                  className="cf-modal__btn cf-modal__btn--primary">
+                  View Credential ↗
+                </a>
+              )}
+              <button onClick={onClose} className="cf-modal__btn cf-modal__btn--secondary">
+                Close
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ─────────────────────────────────────────
+// MAIN
+// ─────────────────────────────────────────
+const FOLDER_COLORS = [
+  "#70a1ff", "#ff6b81", "#eccc68", "#7bed9f",
+  "#a29bfe", "#fd79a8", "#55efc4", "#fdcb6e",
+];
 
 export default function CertifFolder({ certificates }) {
   const [openFolder, setOpenFolder] = useState(null);
-  const [selectedCert, setSelectedCert] = useState(null);
+  const [selected, setSelected] = useState(null);
 
-  // Kelompokkan berdasarkan issuer
   const grouped = certificates.reduce((acc, cert) => {
-    const key = cert.issuer || "Lainnya";
+    const key = cert.issuer || "Other";
     if (!acc[key]) acc[key] = [];
     acc[key].push(cert);
     return acc;
@@ -15,154 +201,29 @@ export default function CertifFolder({ certificates }) {
 
   const folders = Object.entries(grouped);
 
-  const folderColors = [
-    "from-yellow-500 to-orange-500",
-    "from-blue-500 to-cyan-500",
-    "from-purple-500 to-pink-500",
-    "from-green-500 to-teal-500",
-    "from-red-500 to-rose-500",
-    "from-indigo-500 to-violet-500",
-  ];
+  const toggle = (issuer) => {
+    setOpenFolder(prev => prev === issuer ? null : issuer);
+  };
 
   return (
-    <div>
-      {/* FOLDER VIEW */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+    <div className="cf-root">
+      {/* ── Grid folder ── */}
+      <div className="cf-grid">
         {folders.map(([issuer, certs], idx) => (
-          <button
+          <FolderItem
             key={issuer}
-            onClick={() => setOpenFolder(openFolder === issuer ? null : issuer)}
-            className="flex flex-col items-center gap-2 group"
-          >
-            {/* Folder Icon */}
-            <div className={`folder ${openFolder === issuer ? "open" : ""}`}>
-              <div className="folder__back">
-                {/* Papers */}
-                {certs.slice(0, 3).map((cert, i) => (
-                  <div key={i} className="paper">
-                    {cert.image_url && (
-                      <img
-                        src={cert.image_url}
-                        alt={cert.title}
-                        className="w-full h-full object-cover rounded"
-                      />
-                    )}
-                  </div>
-                ))}
-
-                {/* Front */}
-                <div className="folder__front"></div>
-              </div>
-            </div>
-
-            {/* Label */}
-            <p className="text-sm font-medium text-center leading-tight">
-              {issuer}
-            </p>
-            <p className="text-xs text-zinc-500">
-              {certs.length} certificate{certs.length > 1 ? "s" : ""}
-            </p>
-          </button>
+            issuer={issuer}
+            certs={certs}
+            isOpen={openFolder === issuer}
+            color={FOLDER_COLORS[idx % FOLDER_COLORS.length]}
+            onToggle={() => toggle(issuer)}
+            onCertClick={setSelected}
+          />
         ))}
       </div>
 
-      {/* OPEN FOLDER - Certificate list */}
-      {openFolder && (
-        <div className="mt-10 bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">📂 {openFolder}</h3>
-            <button
-              onClick={() => setOpenFolder(null)}
-              className="text-zinc-400 hover:text-white text-sm px-3 py-1 rounded-lg hover:bg-zinc-800 transition"
-            >
-              ✕ Tutup
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {grouped[openFolder].map((cert) => (
-              <div
-                key={cert.id}
-                onClick={() => setSelectedCert(cert)}
-                className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden hover:scale-[1.02] hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
-              >
-                {cert.image_url && (
-                  <img
-                    src={cert.image_url}
-                    alt={cert.title}
-                    loading="lazy"
-                    className="w-full h-36 object-cover"
-                  />
-                )}
-                <div className="p-3">
-                  <p className="text-sm font-semibold line-clamp-2">
-                    {cert.title}
-                  </p>
-                  <p className="text-xs text-purple-400 mt-1">
-                    {cert.issuer} • {cert.year}
-                  </p>
-                  {cert.credential_url && (
-                    <a
-                      href={cert.credential_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:underline"
-                    >
-                      View Credential ↗
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* MODAL detail certificate */}
-      {selectedCert && (
-        <div
-          onClick={() => setSelectedCert(null)}
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-md overflow-hidden"
-          >
-            {selectedCert.image_url && (
-              <img
-                src={selectedCert.image_url}
-                alt={selectedCert.title}
-                className="w-full h-56 object-cover"
-              />
-            )}
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-1">{selectedCert.title}</h3>
-              <p className="text-purple-400 text-sm mb-4">
-                {selectedCert.issuer} • {selectedCert.year}
-              </p>
-              <div className="flex gap-3">
-                {selectedCert.credential_url && (
-                  <a
-                    href={selectedCert.credential_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 text-center py-2 bg-purple-600 hover:bg-purple-700 rounded-xl text-sm font-semibold transition"
-                  >
-                    View Credential ↗
-                  </a>
-                )}
-                <button
-                  onClick={() => setSelectedCert(null)}
-                  className="flex-1 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-xl text-sm font-semibold transition"
-                >
-                  Tutup
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Modal ── */}
+      {selected && <CertModal cert={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }

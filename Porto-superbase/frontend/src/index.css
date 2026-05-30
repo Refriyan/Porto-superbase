@@ -33,3 +33,19 @@ html, body {
 .btn-primary {
   @apply py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 transition;
 }
+/* ── Performance Optimizations ── */
+img {
+  content-visibility: auto;
+}
+
+/* GPU compositing untuk animasi berat */
+.folder,
+.pc-card-wrapper,
+.cf-card {
+  will-change: transform;
+}
+
+/* Prevent layout shift pada section */
+section {
+  contain: layout style;
+}

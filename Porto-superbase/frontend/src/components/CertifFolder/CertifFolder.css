@@ -1,3 +1,6 @@
+/* ═══════════════════════════════════════
+   FOLDER CSS ANIMASI (original dipertahankan)
+═══════════════════════════════════════ */
 :root {
   --folder-color: #70a1ff;
   --folder-back-color: #4785ff;
@@ -14,20 +17,16 @@
   cursor: pointer;
 }
 
-.folder:not(.folder--click):hover {
+.folder:not(.open):hover {
   transform: translateY(-8px);
 }
 
-.folder:not(.folder--click):hover .paper {
+.folder:not(.open):hover .paper {
   transform: translate(-50%, 0%);
 }
 
-.folder:not(.folder--click):hover .folder__front {
+.folder:not(.open):hover .folder__front {
   transform: skew(15deg) scaleY(0.6);
-}
-
-.folder:not(.folder--click):hover .right {
-  transform: skew(-15deg) scaleY(0.6);
 }
 
 .folder.open {
@@ -38,17 +37,9 @@
   transform: translate(-120%, -70%) rotateZ(-15deg);
 }
 
-.folder.open .paper:nth-child(1):hover {
-  transform: translate(-120%, -70%) rotateZ(-15deg) scale(1.1);
-}
-
 .folder.open .paper:nth-child(2) {
   transform: translate(10%, -70%) rotateZ(15deg);
   height: 80%;
-}
-
-.folder.open .paper:nth-child(2):hover {
-  transform: translate(10%, -70%) rotateZ(15deg) scale(1.1);
 }
 
 .folder.open .paper:nth-child(3) {
@@ -56,16 +47,8 @@
   height: 80%;
 }
 
-.folder.open .paper:nth-child(3):hover {
-  transform: translate(-50%, -100%) rotateZ(5deg) scale(1.1);
-}
-
 .folder.open .folder__front {
   transform: skew(15deg) scaleY(0.6);
-}
-
-.folder.open .right {
-  transform: skew(-15deg) scaleY(0.6);
 }
 
 .folder__back {
@@ -74,6 +57,7 @@
   height: 80px;
   background: var(--folder-back-color);
   border-radius: 0px 10px 10px 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
 }
 
 .folder__back::after {
@@ -99,11 +83,10 @@
   background: var(--paper-1);
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
+  overflow: hidden;
 }
 
-.paper img {
-  pointer-events: none;
-}
+.paper img { pointer-events: none; }
 
 .paper:nth-child(2) {
   background: var(--paper-2);
@@ -127,12 +110,367 @@
   transform-origin: bottom;
   transition: all 0.3s ease-in-out;
 }
-/* depth effect */
-.folder__back {
-  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-}
 
-/* hover glow */
 .folder:hover .folder__front {
   filter: brightness(1.1);
+}
+
+/* ═══════════════════════════════════════
+   ROOT & GRID
+═══════════════════════════════════════ */
+.cf-root {
+  width: 100%;
+}
+
+.cf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 480px) { .cf-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 640px) { .cf-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 900px) { .cf-grid { grid-template-columns: repeat(5, 1fr); } }
+
+/* ═══════════════════════════════════════
+   FOLDER WRAP & BUTTON
+═══════════════════════════════════════ */
+.cf-folder-wrap {
+  display: contents; /* folder button dan panel jadi siblings di grid */
+}
+
+.cf-folder-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 16px 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cf-folder-btn:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.cf-folder-btn--active {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.cf-folder-btn__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.cf-folder-btn__count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ═══════════════════════════════════════
+   SWIPER PANEL
+   — span full width (semua kolom grid)
+═══════════════════════════════════════ */
+.cf-panel {
+  grid-column: 1 / -1;   /* bentang semua kolom */
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid var(--accent, #70a1ff);
+  border-radius: 16px;
+  padding: 16px 20px 20px;
+  overflow: hidden;
+}
+
+.cf-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.cf-panel__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cf-panel__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+
+.cf-panel__count {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+}
+
+.cf-panel__arrows {
+  display: flex;
+  gap: 6px;
+}
+
+.cf-panel__arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.cf-panel__arrow:hover:not(:disabled) {
+  background: rgba(255,255,255,0.15);
+}
+
+.cf-panel__arrow--disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.cf-panel__close {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.cf-panel__close:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+}
+
+/* ═══════════════════════════════════════
+   SWIPER TRACK
+═══════════════════════════════════════ */
+.cf-panel__track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.cf-panel__track::-webkit-scrollbar { height: 4px; }
+.cf-panel__track::-webkit-scrollbar-track { background: transparent; }
+.cf-panel__track::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════
+   CARD
+═══════════════════════════════════════ */
+.cf-card {
+  flex-shrink: 0;
+  width: 210px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cf-card:hover {
+  border-color: rgba(167,139,250,0.45);
+  box-shadow: 0 6px 24px rgba(167,139,250,0.12);
+}
+
+.cf-card__img {
+  position: relative;
+  height: 126px;
+  background: rgba(255,255,255,0.03);
+  overflow: hidden;
+}
+
+.cf-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cf-card:hover .cf-card__img img {
+  transform: scale(1.06);
+}
+
+.cf-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  opacity: 0.2;
+}
+
+.cf-card__year {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
+}
+
+.cf-card__body {
+  padding: 11px 12px;
+}
+
+.cf-card__title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.cf-card__issuer {
+  font-size: 11px;
+  color: rgba(167,139,250,0.75);
+  margin-bottom: 6px;
+}
+
+.cf-card__link {
+  font-size: 11px;
+  color: #60a5fa;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.cf-card__link:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.cf-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.cf-modal__box {
+  background: #111118;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+
+.cf-modal__img {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+}
+
+.cf-modal__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cf-modal__body { padding: 22px; }
+
+.cf-modal__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.cf-modal__meta {
+  font-size: 13px;
+  color: #a78bfa;
+  margin-bottom: 18px;
+}
+
+.cf-modal__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cf-modal__btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+  border: none;
+}
+
+.cf-modal__btn--primary {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+}
+
+.cf-modal__btn--primary:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.cf-modal__btn--secondary {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.65);
+}
+
+.cf-modal__btn--secondary:hover {
+  background: rgba(255,255,255,0.13);
+}
+
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
+@media (max-width: 480px) {
+  .cf-card { width: 175px; }
+  .cf-card__img { height: 106px; }
+  .cf-panel { padding: 12px 14px 16px; }
 }

@@ -39,7 +39,11 @@ export default function ProtectedRoute({ children }) {
     return () => clearInterval(interval);
   }, []);
 
-  if (allowed === null) return <div>Loading...</div>;
+  if (allowed === null) return (
+    <div className="fixed inset-0 flex items-center justify-center bg-zinc-950">
+      <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+    </div>
+  );
   if (!allowed) return <Navigate to="/login" replace />;
 
   return children;
