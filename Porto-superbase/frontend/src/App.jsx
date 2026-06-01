@@ -1,23 +1,25 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, lazy, Suspense } from "react";
 import ProfileCard from "./components/ProfileCard/ProfileCard";
 import ShinyText from "./components/ShinyText/ShinyText";
 import BlurText from "./components/BlurText/BlurText";
 import ScrambledText from "./components/ScrambledText/ScrambledText";
 import SplitText from "./components/SplitText/SplitText";
-import Lanyard from "./components/Lanyard/Lanyard";
 import GlassIcons from "./components/GlassIcons/GlassIcons";
 import { listTools } from "./data";
-import ChromaGrid from "./components/ChromaGrid/ChromaGrid";
-import ProjectModal from "./components/ProjectModal/ProjectModal"; // <-- IMPORT MODAL
 import Aurora from "./components/Aurora/Aurora";
 import AOS from "aos";
-import "aos/dist/aos.css"; // You can also use <link> for styles
+import "aos/dist/aos.css";
 import { getProjects } from "./services/project";
 import { getCertif } from "./services/certif";
-import ChatBot from "./components/ChatBot";
 import { FaEnvelope, FaInstagram } from "react-icons/fa";
 import SkillsGrid from "./components/SkillsGrid/SkillsGrid";
-import CertifFolder from "./components/CertifFolder/CertifFolder";
+
+// Lazy load komponen berat (Three.js, animasi, dll)
+const Lanyard       = lazy(() => import("./components/Lanyard/Lanyard"));
+const ChromaGrid    = lazy(() => import("./components/ChromaGrid/ChromaGrid"));
+const ProjectModal  = lazy(() => import("./components/ProjectModal/ProjectModal"));
+const ChatBot       = lazy(() => import("./components/ChatBot"));
+const CertifFolder  = lazy(() => import("./components/CertifFolder/CertifFolder"));
 
 // ..
 function App() {
@@ -110,8 +112,10 @@ function App() {
                 <img
                   src="./assets/ref.png"
                   className="w-10 rounded-md"
-                  loading="lazy"
+                  fetchPriority="high"
                   decoding="async"
+                  width="40"
+                  height="40"
                 />
                 <q>Fatigue is temporary, effort lasts longer.</q>
               </div>
@@ -199,7 +203,9 @@ function App() {
 
             {/* ===== RIGHT VISUAL ===== */}
             <div className="flex justify-center">
-              <Lanyard position={[0, 0, 12]} gravity={[0, -30, 0]} />
+              <Suspense fallback={<div className="w-full h-[400px] flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"/></div>}>
+                <Lanyard position={[0, 0, 12]} gravity={[0, -30, 0]} />
+              </Suspense>
             </div>
           </div>
         </section>
@@ -249,6 +255,7 @@ function App() {
             data-aos-delay="400"
             data-aos-once="true"
           >
+            <Suspense fallback={<div className="w-full h-[400px] flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"/></div>}>
             <ChromaGrid
               items={projects.map((p) => ({
                 ...p,
@@ -267,6 +274,7 @@ function App() {
               fadeOut={0.6}
               ease="power3.out"
             />
+            </Suspense>
           </div>
         </div>
         {/* Proyek */}
@@ -283,7 +291,9 @@ function App() {
           <p className="text-base/loose text-center opacity-50 mb-14">
             My certifications and achievements
           </p>
-          <CertifFolder certificates={certificates} />
+          <Suspense fallback={<div className="py-20 flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"/></div>}>
+            <CertifFolder certificates={certificates} />
+          </Suspense>
         </section>
 
         {/* ================= CONTACT ================= */}
@@ -347,7 +357,9 @@ function App() {
                   <span className="text-xs text-white/50 font-medium">AI Assistant — Powered by Claude</span>
                 </div>
                 <div className="flex-1">
-                  <ChatBot />
+                  <Suspense fallback={<div className="py-8 flex items-center justify-center text-white/30 text-sm">Loading chat...</div>}>
+                    <ChatBot />
+                  </Suspense>
                 </div>
               </div>
             </div>
@@ -412,11 +424,13 @@ function App() {
         {/* Kontak */}
       </main>
 
-      <ProjectModal
-        isOpen={!!selectedProject}
-        onClose={handleCloseModal}
-        project={selectedProject}
-      />
+      <Suspense fallback={null}>
+        <ProjectModal
+          isOpen={!!selectedProject}
+          onClose={handleCloseModal}
+          project={selectedProject}
+        />
+      </Suspense>
     </>
   );
 }

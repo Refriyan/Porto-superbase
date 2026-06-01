@@ -33,10 +33,7 @@ html, body {
 .btn-primary {
   @apply py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 transition;
 }
-/* ── Performance Optimizations ── */
-img {
-  content-visibility: auto;
-}
+
 
 /* GPU compositing untuk animasi berat */
 .folder,
@@ -48,4 +45,51 @@ img {
 /* Prevent layout shift pada section */
 section {
   contain: layout style;
+}
+
+/* ── Critical CSS (dipindah dari index.html inline) ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background-color: #18181b;
+  color: #ffffff;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+#root { min-height: 100vh; }
+img { display: block; max-width: 100%; height: auto; }
+
+
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent layout shift pada semua img */
+img, video {
+  content-visibility: auto;
+}
+
+/* GPU compositing hanya saat dibutuhkan (reduce paint) */
+.folder,
+.pc-card-wrapper,
+.cf-card {
+  will-change: transform;
+  contain: layout style;
+}
+
+/* Reduce paint area Aurora background */
+.aurora-fixed {
+  will-change: auto;
+}
+
+/* Semua section punya paint containment */
+section {
+  contain: layout style;
+}
+
+/* Optimasi font rendering */
+body {
+  text-rendering: optimizeSpeed;
 }

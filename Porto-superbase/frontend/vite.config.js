@@ -14,21 +14,27 @@ export default defineConfig({
   build: {
     target: "esnext",
     chunkSizeWarningLimit: 1000,
+    // Minify CSS
+    cssMinify: true,
+    // Minify JS
+    minify: "esbuild",
     rollupOptions: {
       output: {
+        // Hash di nama file = cache busting otomatis
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
         manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-react":    ["react", "react-dom", "react-router-dom"],
           "vendor-supabase": ["@supabase/supabase-js"],
-          "vendor-three": ["three", "@react-three/fiber", "@react-three/drei", "@react-three/rapier"],
-          "vendor-motion": ["framer-motion"],
-          "vendor-gsap": ["gsap"],
+          "vendor-three":    ["three", "@react-three/fiber", "@react-three/drei", "@react-three/rapier"],
+          "vendor-motion":   ["framer-motion"],
+          "vendor-gsap":     ["gsap"],
+          "vendor-icons":    ["react-icons"],
         }
       }
     }
   },
 
-  // Optimize dev server
-  server: {
-    hmr: true,
-  }
+  server: { hmr: true },
 })

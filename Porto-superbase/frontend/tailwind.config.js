@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#06b6d4", // cyan kamu
+        primary: "#06b6d4",
         dark: "#0a0a0a",
         glass: "rgba(255,255,255,0.05)",
       },
@@ -20,4 +20,8 @@ module.exports = {
     },
   },
   plugins: [],
+  // Hindari generate utility yang tidak perlu
+  corePlugins: {
+    preflight: true,
+  },
 };
