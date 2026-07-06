@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import { pdfFileToImage } from "@/utils/pdfThumbnail";
 import "./Dashboard.css";
 
 export default function Dashboard({
@@ -45,6 +46,30 @@ export default function Dashboard({
 }) {
   const [preview, setPreview] = useState(null);
   const [certPreview, setCertPreview] = useState(null);
+  const [certFile, setCertFile] = useState(null);
+  const [certConverting, setCertConverting] = useState(false);
+
+  // Dipanggil saat user pilih/drop file untuk sertifikat.
+  // Kalau filenya PDF, langsung render halaman pertama jadi gambar
+  // supaya preview & yang diupload nanti sama-sama berupa gambar.
+  const handleCertFileSelected = async (file) => {
+    if (!file) return;
+
+    if (file.type === "application/pdf") {
+      setCertConverting(true);
+      const rendered = await pdfFileToImage(file);
+      setCertConverting(false);
+      const finalFile = rendered || file; // fallback ke pdf asli kalau gagal render
+      setCertImage(finalFile);
+      setCertFile(finalFile);
+      setCertPreview(URL.createObjectURL(finalFile));
+      return;
+    }
+
+    setCertImage(file);
+    setCertFile(file);
+    setCertPreview(URL.createObjectURL(file));
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleDrop = (e, setFile, setPreview) => {
@@ -54,6 +79,15 @@ export default function Dashboard({
       setFile(file);
       setPreview(URL.createObjectURL(file));
     }
+  };
+
+  // Deteksi apakah file/preview sertifikat berupa PDF (bukan gambar).
+  // `file` = File object yang baru dipilih (punya .type), `previewUrl` = fallback
+  // saat editing data lama yang hanya berupa string URL dari database.
+  const isPdfFile = (file, previewUrl) => {
+    if (file) return file.type === "application/pdf";
+    if (previewUrl) return previewUrl.toLowerCase().split("?")[0].endsWith(".pdf");
+    return false;
   };
 
   useEffect(() => {
@@ -76,8 +110,10 @@ export default function Dashboard({
       setYear(editingCert.year || "");
       setCredentialUrl(editingCert.credential_url || "");
       setCertPreview(editingCert.image_url || null);
+      setCertFile(null);
     } else {
       setCertPreview(null);
+      setCertFile(null);
     }
   }, [editingCert, setCertName, setIssuer, setYear, setCredentialUrl]);
 
@@ -409,26 +445,31 @@ export default function Dashboard({
                     <div className="flex flex-col sm:flex-row gap-4 items-start">
                       {/* Upload area */}
                       <div
-                        onDrop={(e) => handleDrop(e, setCertImage, setCertPreview)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          handleCertFileSelected(e.dataTransfer.files[0]);
+                        }}
                         onDragOver={(e) => e.preventDefault()}
                         onClick={() => document.getElementById("fileInputCert").click()}
                         className="flex-1 border border-dashed border-white/20 rounded-xl p-4 text-center text-gray-400 hover:border-indigo-500 hover:bg-indigo-500/5 transition cursor-pointer flex items-center justify-center gap-2 min-h-[56px]"
                       >
-                        {certPreview ? (
-                          <img src={certPreview} className="h-12 object-contain rounded-lg" />
+                        {certConverting ? (
+                          <span className="text-sm animate-pulse">⏳ Converting PDF to image...</span>
+                        ) : certPreview ? (
+                          isPdfFile(certFile, certPreview) ? (
+                            <span className="text-sm flex items-center gap-2">📄 {certFile?.name || "certificate.pdf"}</span>
+                          ) : (
+                            <img src={certPreview} className="h-12 object-contain rounded-lg" />
+                          )
                         ) : (
-                          <span className="text-sm">📎 Drag & drop or click to upload image</span>
+                          <span className="text-sm">📎 Drag & drop or click to upload image / PDF</span>
                         )}
                         <input
                           id="fileInputCert"
                           type="file"
                           className="hidden"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            setCertImage(file);
-                            setCertPreview(URL.createObjectURL(file));
-                          }}
+                          accept="image/*,application/pdf"
+                          onChange={(e) => handleCertFileSelected(e.target.files[0])}
                         />
                       </div>
 
@@ -467,10 +508,17 @@ export default function Dashboard({
                         {/* Thumbnail */}
                         <div className="relative h-40 bg-white/5 overflow-hidden">
                           {c.image_url ? (
-                            <img
-                              src={c.image_url}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
+                            isPdfFile(null, c.image_url) ? (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-gray-300">
+                                <span className="text-4xl">📄</span>
+                                <span className="text-xs opacity-70">PDF</span>
+                              </div>
+                            ) : (
+                              <img
+                                src={c.image_url}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            )
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-4xl opacity-20">🏆</div>
                           )}

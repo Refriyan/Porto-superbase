@@ -2,6 +2,9 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./CertifFolder.css";
 
+// Cek apakah image_url sertifikat sebenarnya file PDF (bukan gambar)
+const isPdfUrl = (url) => !!url && url.toLowerCase().split("?")[0].endsWith(".pdf");
+
 // ─────────────────────────────────────────
 // Swiper Card
 // ─────────────────────────────────────────
@@ -14,10 +17,13 @@ function SwiperCard({ cert, onClick }) {
       className="cf-card"
     >
       <div className="cf-card__img">
-        {cert.image_url
-          ? <img src={cert.image_url} alt={cert.title} loading="lazy" />
-          : <div className="cf-card__placeholder">🏆</div>
-        }
+        {cert.image_url ? (
+          isPdfUrl(cert.image_url)
+            ? <div className="cf-card__placeholder">📄</div>
+            : <img src={cert.image_url} alt={cert.title} loading="lazy" />
+        ) : (
+          <div className="cf-card__placeholder">🏆</div>
+        )}
         <span className="cf-card__year">{cert.year}</span>
       </div>
       <div className="cf-card__body">
@@ -70,8 +76,12 @@ function FolderItem({ issuer, certs, isOpen, color, onToggle, onCertClick }) {
             {certs.slice(0, 3).map((cert, i) => (
               <div key={i} className="paper">
                 {cert.image_url && (
-                  <img src={cert.image_url} alt={cert.title}
-                    className="w-full h-full object-cover rounded" />
+                  isPdfUrl(cert.image_url) ? (
+                    <div className="w-full h-full flex items-center justify-center text-lg">📄</div>
+                  ) : (
+                    <img src={cert.image_url} alt={cert.title}
+                      className="w-full h-full object-cover rounded" />
+                  )
                 )}
               </div>
             ))}
@@ -156,7 +166,15 @@ function CertModal({ cert, onClose }) {
         >
           {cert.image_url && (
             <div className="cf-modal__img">
-              <img src={cert.image_url} alt={cert.title} />
+              {isPdfUrl(cert.image_url) ? (
+                <iframe
+                  src={cert.image_url}
+                  title={cert.title}
+                  className="w-full h-[70vh] rounded-lg border-0"
+                />
+              ) : (
+                <img src={cert.image_url} alt={cert.title} />
+              )}
             </div>
           )}
           <div className="cf-modal__body">

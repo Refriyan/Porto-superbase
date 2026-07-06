@@ -13,6 +13,7 @@ import {
   updateCertif,
 } from "../services/certif";
 import { uploadImage } from "../services/storage";
+import { pdfFileToImage } from "../utils/pdfThumbnail";
 import { supabase } from "../services/api";
 import Dashboard from "../components/Dashboard/Dashboard";
 
@@ -171,6 +172,16 @@ export default function Admin() {
   };
 
   // ================= CERTIFICATE =================
+  // Kalau file yang dipilih PDF, render halaman pertamanya jadi gambar PNG
+  // dulu sebelum diupload, supaya tampil sebagai thumbnail seperti gambar biasa.
+  const resolveCertUploadFile = async (file) => {
+    if (file.type === "application/pdf") {
+      const rendered = await pdfFileToImage(file);
+      return rendered || file; // fallback ke file asli kalau render gagal
+    }
+    return file;
+  };
+
   const handleCreateCert = async () => {
     try {
       if (!certName || !issuer) {
@@ -186,7 +197,8 @@ export default function Admin() {
       let imagePath = null;
 
       if (certImage) {
-        imagePath = await uploadImage(certImage, "certificates");
+        const fileToUpload = await resolveCertUploadFile(certImage);
+        imagePath = await uploadImage(fileToUpload, "certificates");
       }
 
       await createCertif({
@@ -230,7 +242,8 @@ export default function Admin() {
       let imagePath = editingCert.image_url;
 
       if (certImage) {
-        imagePath = await uploadImage(certImage, "certificates");
+        const fileToUpload = await resolveCertUploadFile(certImage);
+        imagePath = await uploadImage(fileToUpload, "certificates");
       }
 
       await updateCertif(editingCert.id, {
